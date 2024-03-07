@@ -1,12 +1,12 @@
 global:
-  project_id: ""
-  env: ""
-  app_version: ""
-  hostname: ""
+  project_id: nanoclinic-dev
+  env: dev
+  appVersion: ""
+  hostname: api.dev.nanoclinic.com.br
 
 ## Define variáveis de ambiente. Exemplo:
 ## ENV: dev
-parameters: {}
+parameters:
 
 
 ## defina as informações de imagem do app
@@ -14,8 +14,8 @@ parameters: {}
 ## image: gcr.io/nanoclinic-prod/nanoapp
 ## image_tag: v1.2.3
 ## imagePullPolicy: Always
-image: image
-image_tag: tag
+image: concierge
+image_tag: latest
 imagePullPolicy: Always
 
 
@@ -23,6 +23,12 @@ imagePullPolicy: Always
 ## Exemplo:
 ## internalPort: 5000
 internalPort: 5000
+
+
+## adicione labels aos recursos do Chart. Exemplo:
+## team: teamA
+extra_labels:
+  app: concierge
 
 ## inicia o app em modo debug, sobrescrevendo o entrypoint do container
 ## altere para true caso deseje habilitar modo debug
@@ -36,7 +42,7 @@ debugPort:
 ## Ref. https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity
 ## Exemplo:
 ## serviceAccount: nanoapp
-serviceAccount: ""
+serviceAccount: concierge
 
 ## Tipo de serviço para expor o container. ClusterIP é o padrão, mas outros também são suportados
 service:
@@ -47,11 +53,11 @@ service:
 min_memory: 100Mi
 max_memory: 200Mi
 min_cpu: 100m
-max_cpu: 200m
+# max_cpu: 200m
 
 ## Para operações de scale-up e scale-down, defina o número de replicas para o app
 min_replicas: 2
-max_replicas: 2
+max_replicas: 4
 
 ## Para operações de scale-up e scale-down horizontal defina o trigger
 cpu_percentage_trigger: 80
@@ -74,8 +80,8 @@ rolloutUnavailable: 0
 ## serão roteados para este chart. Deve ser único.
 ## Deixe em branco se não for expor o serviço via API Gateway
 expose: true
-route:
-# health_endpoint: nil
+route: concierge
+health_endpoint: /health
 
 
 ## Define URL redirects. Exemplo:
