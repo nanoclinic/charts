@@ -9,7 +9,7 @@ labels:
   chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
   release: {{ .Release.Name }}
   env: {{ .Values.global.env }}
-  version: {{ default .Chart.AppVersion "0.0.1"}}
+  version: {{ default .Values.global.appVersion "0.0.1"}}
 {{- end }}
 
 {{- define "all.labels" }}
