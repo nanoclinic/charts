@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-internal
+  namespace: {{ .Release.Namespace }}
+{{- include "initial-setup.labels" . | indent 2 }}
+spec:
+  podSelector:
+    matchLabels:
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - ipBlock:
+            cidr: {{ .Values.global.internal_network }}
+        - ipBlock:
+            cidr: {{ .Values.global.vpc_access_network }}
+        - ipBlock:
+            cidr: "130.211.0.0/22" #Google's HealthChecks
+        - ipBlock:
+            cidr: "35.191.0.0/16" #Google's HealthChecks
+  egress:
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0

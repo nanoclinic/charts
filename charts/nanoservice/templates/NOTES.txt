@@ -1,0 +1,70 @@
+
+
+
+☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸
+
+    ☸☸    ☸☸    ☸☸☸☸☸☸☸☸    ☸☸         ☸☸☸     ☸☸☸
+    ☸☸    ☸☸    ☸☸          ☸☸         ☸☸ ☸☸ ☸☸ ☸☸
+    ☸☸☸☸☸☸☸☸    ☸☸☸☸☸☸      ☸☸         ☸☸  ☸☸☸  ☸☸
+    ☸☸    ☸☸    ☸☸          ☸☸         ☸☸       ☸☸
+    ☸☸    ☸☸    ☸☸☸☸☸☸☸☸    ☸☸☸☸☸☸☸    ☸☸       ☸☸
+
+☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸
+
+
+😀 Obrigado 😀 Você instalou o chart: {{ .Chart.Name }}.
+
+Este deployment pode ser atômico se utilizar a flag --atomic ⚛
+Significa que irá fazer rollback caso não seja bem-sucedido.
+
+❗❗❗❗❗ INFO ❗❗❗❗❗
+The backend chart has the following components:
+
+Pre-release:
+    🔅 Monorepo Migration with TypeORM
+
+Release:
+    🔅 Backend pods: workers for the monorepo
+    🔅 Backend services: network connectivity
+    🔅 Backend Ingress: load balancer + certificate
+    🔅 Configmap: parameters and environment variables
+
+Post-release:
+    🔅 DNS Creation
+    🔅 Integration tests with: yarn run test:integration:backend
+
+
+
+🔍🔍🔍🔍🔍🔍🔍🔍🔍🔍🔍🔍🔍🔍🔍🔍🔍🔍🔍🔍
+EXPLORE!
+
+Your runtime logs from this namespace are in the URL below:
+
+{{- if or (eq .Values.global.env "stage") (eq .Values.global.env "emulator") }}
+https://console.cloud.google.com/logs/query;query=resource.type%3D%22k8s_container%22%20OR%20resource.type%3D%22k8s_pod%22%0Aresource.labels.cluster_name%3D%22cluster-stage%22%0Aresource.labels.namespace_name%3D%22{{ .Release.Namespace }}%22;summaryFields=:false:32:beginning;?project={{ .Values.global.project_id }}
+
+{{- else }}
+https://console.cloud.google.com/logs/query;query=resource.type%3D%22k8s_container%22%20OR%20resource.type%3D%22k8s_pod%22%0Aresource.labels.cluster_name%3D%22cluster-{{ .Values.global.env }}%22%0Aresource.labels.namespace_name%3D%22{{ .Release.Namespace }}%22;summaryFields=:false:32:beginning;?project={{ .Values.global.project_id }}
+{{- end }}
+
+
+
+🌀🌀🌀🌀🌀🌀🌀🌀🌀🌀🌀🌀🌀🌀🌀🌀🌀🌀🌀🌀
+CONNECT!
+
+After all deployments, your namespace will have the following URLs:
+
+{{- if or (eq .Values.global.env "stage") (eq .Values.global.env "emulator") }}
+nursa-api:   https://nursa-api-{{ .Release.Namespace }}.stage.nursa.com
+backend:     https://backend-{{ .Release.Namespace }}.stage.nursa.com
+public-api:  https://public-api-{{ .Release.Namespace }}.stage.nursa.com
+
+{{- else }}
+nursa-api:   https://nursa-api.{{ .Values.global.env }}.nursa.com
+backend:     https://backend.{{ .Values.global.env }}.nursa.com
+public-api:  https://public-api.{{ .Values.global.env }}.nursa.com
+{{- end }}
+
+
+
+

@@ -1,0 +1,92 @@
+{{- /* backend deployment */}}
+
+
+{{ $max_memory := ternary (index .Values .Release.Name "max_vpa_memory") (index .Values .Release.Name "max_memory") (eq .Values.global.env "stage") -}}
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $app }}
+  namespace: {{ .Release.Namespace }}
+{{- include "labels.all" . | indent 2 }}
+{{- include "annotations.common" . | indent 2 }}
+spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: {{ .Values.rolloutSurge }}
+      maxUnavailable: {{ .Values.rolloutUnavailable }}
+  selector:
+    matchLabels:
+      app: {{ $app }}
+  replicas: {{ .Values.min_replicas }}
+  template:
+    metadata:
+{{- include "labels.all" . | indent 6 }}
+        app: {{ $app }}
+{{- include "annotations.common" . | indent 6 }}
+    spec:
+      serviceAccountName: {{ .Values.serviceAccount }}
+      nodeSelector:
+        iam.gke.io/gke-metadata-server-enabled: "true"
+      containers:
+        - name: {{ $app }}
+          image: {{ printf "%s:%s" .Values.image .Values.image_tag }}
+          imagePullPolicy: {{ .Values.imagePullPolicy }}
+          ports:
+          - containerPort: {{ .Values.internalPort }}
+        {{- if eq .Values.debug true }}
+          - containerPort: {{ .Values.debugPort }}
+        {{- end }}
+        {{- if .Values.probe_config }}
+          {{- if .Values.startupProbe }}
+            startupProbe:
+              periodSeconds: {{- .Values.startupProbe.periodSeconds}}
+              timeoutSeconds: {{- .Values.startupProbe.timeoutSeconds}}
+              failureThreshold: {{- .Values.startupProbe.failureThreshold}}
+              {{- .Values.probe_config }}
+          {{- end }}
+          {{- if .Values.livenessProbe }}
+            livenessProbe:
+              periodSeconds: {{- .Values.livenessProbe.periodSeconds}}
+              timeoutSeconds: {{- .Values.livenessProbe.timeoutSeconds}}
+              failureThreshold: {{- .Values.livenessProbe.failureThreshold}}
+              {{- .Values.probe_config }}
+          {{- end }}
+          {{- if .Values.readinessProbe }}
+            readinessProbe:
+              periodSeconds: {{- .Values.readinessProbe.periodSeconds}}
+              timeoutSeconds: {{- .Values.readinessProbe.timeoutSeconds}}
+              failureThreshold: {{- .Values.readinessProbe.failureThreshold}}
+              {{- .Values.probe_config }}
+          {{- end }}
+        {{- end }}
+        {{- if ne .Values.debug true }}
+          resources:
+            requests:
+              cpu: {{ .Values.min_cpu }}
+            limits:
+              cpu: {{ .Values.max_cpu }}
+        {{- end }}
+        {{- if eq .Values.debug true }}
+          command: {{- Values.debug_command }}
+          args: {{- Values.debug_args }}
+        {{- end }}
+          env:
+            {{- range $key,$value:= .Values.parameters }}
+              - name: {{ $key | replace "-" "_" }}
+                value: {{ $value }}
+            {{- end }}
+    {{- if .Values.migration.enabled }}
+      initContainers:
+        - name: {{ $app }}-db-migrator
+          image: {{ printf "%s:%s" .Values.image .Values.image_tag }}
+          imagePullPolicy: {{ .Values.imagePullPolicy }}
+          command: {{ .Values.migration.command }}
+          args: {{ .Values.migration.args }}
+          env:
+            {{- range $key,$value:= .Values.parameters }}
+              - name: {{ $key | replace "-" "_" }}
+                value: {{ $value }}
+            {{- end }}
+    {{- end }}

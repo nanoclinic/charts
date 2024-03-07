@@ -1,0 +1,52 @@
+name: Terraform Apply Composite Action
+description: Applies a Terraform plan in the specified environment
+
+inputs:
+  env:
+    description: Environment name
+    required: true
+  github_token:
+    description: 'Auth Token to fetch private terraform modules'
+    required: true
+  branch:
+    description: Branch name
+    required: true
+  region:
+    description: Region name
+    required: true
+  working-directory:
+    description: Working directory for Terraform
+    required: false
+    default: ci-cd/terraform/gcp
+
+runs:
+  using: composite
+  steps:
+    - name: Adjust git config to terraform
+      shell: bash
+      id: terraform_config
+      run: |
+        git config --global url."https://oauth2:${{ inputs.github_token }}@github.com".insteadOf https://github.com
+        dir_basename=$(basename "${{ inputs.working-directory }}")
+        echo "dir_basename=${dir_basename}" | tee -a $GITHUB_OUTPUT
+
+    - name: Download Terraform plan
+      uses: actions/download-artifact@v4
+      with:
+        name: ${{ steps.terraform_config.outputs.dir_basename }}_${{ inputs.branch }}_${{ inputs.env }}.tfplan
+        path: ${{ inputs.working-directory }}
+
+    - name: Terraform init
+      run: terraform init
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+
+    - name: Terraform select workspace
+      run: terraform workspace select ${{ inputs.env }}
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+
+    - name: Terraform apply
+      run: terraform apply ${{ inputs.branch }}_${{ inputs.env }}.tfplan
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}

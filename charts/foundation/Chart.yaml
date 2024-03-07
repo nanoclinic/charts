@@ -1,0 +1,5 @@
+apiVersion: v2
+description: Chart for the namespace initial configuration
+name: foundation
+version: 0.1.0
+
