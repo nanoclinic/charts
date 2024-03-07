@@ -2,11 +2,6 @@ global:
   project_id: ""
   env: ""
   appVersion: ""
-  internal_network: ""
-  vpc_access_network: ""
-  api_gateway:
-    hostname: api.{{ .Values.global.env }}.nanoclinic.com.br
-    certificate: ""
 
 ## Define variáveis de ambiente. Exemplo:
 ## ENV: dev
@@ -77,13 +72,12 @@ rolloutUnavailable: 0
 
 ## Define as rotas a serem expostas para o app no API Gateway
 ## Por exemplo:
-## routes:
-##   nanoapp
+## route: nanoapp
 ##
 ## Esta configuração significa que os requests para o hostname único como api.dev.nanoclinic.com.br/nanoapp
 ## serão roteados para este chart. Deve ser único.
 ## Deixe em branco se não for expor o serviço via API Gateway
-routes:
+route:
 health_endpoint:
 
 

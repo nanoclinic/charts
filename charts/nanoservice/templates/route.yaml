@@ -1,3 +1,4 @@
+{{- if .Values.route }}
 kind: HTTPRoute
 apiVersion: gateway.networking.k8s.io/v1beta1
 metadata:
@@ -13,7 +14,7 @@ spec:
     - matches:
       - path:
           type: PathPrefix
-          value: {{ printf "/%s" $app }}
+          value: {{ printf "/%s" .Values.route }}
       filters:
       - type: URLRewrite
         urlRewrite:
@@ -24,18 +25,18 @@ spec:
       - name: {{ $app }}
         port: {{  $.Values.internalPort }}
     {{- range $key,$value:= .Values.redirects }}
-    - matches:
-      - path:
-          type: PathPrefix
-          value: {{ $key }}
-      filters:
-      - type: URLRewrite
-        urlRewrite:
-          path:
-            type: ReplacePrefixMatch
-            replacePrefixMatch: {{ $value }}
-      backendRefs:
-      - name: {{ $app }}
-        port: {{  $.Values.internalPort }}
+      - matches:
+        - path:
+            type: PathPrefix
+            value: {{ $key }}
+        filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: {{ $value }}
+        backendRefs:
+        - name: {{ $app }}
+          port: {{  $.Values.internalPort }}
     {{- end }}
-  {{- end }}
+{{- end }}
