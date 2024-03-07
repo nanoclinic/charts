@@ -1,4 +1,4 @@
 apiVersion: v2
 description: Template para microservico nano
 name: nanoservice
-version: 0.1.8
+version: 1.0.0
