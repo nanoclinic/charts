@@ -11,6 +11,14 @@ entries:
     version: 1.0.0
   nanoservice:
   - apiVersion: v2
+    created: "2024-03-07T22:48:03.214549389Z"
+    description: Template para microservico nano
+    digest: 72de4d59568eb207a573b1b6a0f4799c81fe4073d4e0b1ba103e4ba9b443756b
+    name: nanoservice
+    urls:
+    - https://github.com/nanoclinic/charts/releases/download/nanoservice-1.1.0/nanoservice-1.1.0.tgz
+    version: 1.1.0
+  - apiVersion: v2
     created: "2024-03-07T21:10:53.175457881Z"
     description: Template para microservico nano
     digest: f9666f3dae94941ee17f7cf70948f01fd400ad0f0194485471aa030ac66b85d6
@@ -26,4 +34,4 @@ entries:
     urls:
     - https://github.com/nanoclinic/charts/releases/download/nanoservice-1.0.0/nanoservice-1.0.0.tgz
     version: 1.0.0
-generated: "2024-03-07T21:10:53.175470375Z"
+generated: "2024-03-07T22:48:03.214569006Z"
