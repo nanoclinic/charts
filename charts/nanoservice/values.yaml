@@ -2,6 +2,7 @@ global:
   project_id: ""
   env: ""
   appVersion: ""
+  hostname: ""
 
 ## Define variáveis de ambiente. Exemplo:
 ## ENV: dev
@@ -13,15 +14,15 @@ parameters:
 ## image: gcr.io/nanoclinic-prod/nanoapp
 ## image_tag: v1.2.3
 ## imagePullPolicy: Always
-image: ""
-image_tag: ""
+image: image
+image_tag: tag
 imagePullPolicy: Always
 
 
 ## porta interna do container, que iremos expor com o serviço
 ## Exemplo:
 ## internalPort: 5000
-internalPort:
+internalPort: 5000
 
 
 ## adicione labels aos recursos do Chart. Exemplo:
@@ -33,7 +34,7 @@ extra_labels:
 debug: false
 debug_command: "sleep"
 debug_args: ["infinity"]
-debugPort: ""
+debugPort:
 
 ## Service Account para o pod. Este service account será autenticado via workload identity, diretamente via infra.
 ## Assim o pod terá as permissões definidas por este service account sem nenhuma outra config de autenticação necessária.
@@ -77,8 +78,9 @@ rolloutUnavailable: 0
 ## Esta configuração significa que os requests para o hostname único como api.dev.nanoclinic.com.br/nanoapp
 ## serão roteados para este chart. Deve ser único.
 ## Deixe em branco se não for expor o serviço via API Gateway
+expose: true
 route:
-health_endpoint:
+# health_endpoint: nil
 
 
 ## Define URL redirects. Exemplo:
@@ -117,6 +119,9 @@ migration:
 #   tcpSocket:
 #     port: 1234
 probe_config:
+  httpGet:
+    path: /health
+    port: 5000
 
 # Deixe em branco caso não queira alguma probe, por exemplo a configuração abaixo desativa todas as probes:
 # startupProbe:

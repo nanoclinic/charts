@@ -1,12 +1,12 @@
 apiVersion: autoscaling.gke.io/v1beta1
 kind: MultidimPodAutoscaler
 metadata:
-  name: {{- printf "mpa-%s" $app}}
+  name: {{ printf "mpa-%s" .Release.Name }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
-    kind: Deployment 
-    name: {{ $app }}
+    kind: Deployment
+    name: {{ .Release.Name }}
   goals:
     metrics:
     - type: Resource
@@ -31,4 +31,3 @@ spec:
           memory: {{ .Values.max_memory }}
   policy:
     updateMode: Auto
-{{- end}}
