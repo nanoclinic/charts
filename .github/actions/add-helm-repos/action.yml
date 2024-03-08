@@ -1,9 +1,0 @@
-name: 'Add Helm Repositories'
-description: 'Add Bitnami and Secrets Store CSI Driver Helm repositories'
-
-runs:
-  using: "composite"
-  steps:
-    - name: Add bitnami repo
-      run: helm repo add bitnami https://charts.bitnami.com/bitnami
-      shell: bash

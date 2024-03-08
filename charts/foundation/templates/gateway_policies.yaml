@@ -1,11 +1,11 @@
 apiVersion: networking.gke.io/v1
 kind: GCPGatewayPolicy
 metadata:
-  name: {{ printf "gateway-ssl-policy-%s" .Release.Namespace}}
+  name: {{ printf "gateway-ssl-policy-%s" .Release.Namespace }}
   namespace: {{ .Release.Namespace }}
 spec:
   default:
-    sslPolicy: {{ printf "gateway-tls-policy-%s" .Values.global.project_id}}
+    sslPolicy: {{ printf "gateway-tls-policy-%s" .Values.global.project_id }}
   targetRef:
     group: gateway.networking.k8s.io
     kind: Gateway
