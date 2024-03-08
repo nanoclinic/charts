@@ -11,12 +11,12 @@ api_gateway:
 rabbitmq:
   enabled: true
   podLabels:
-    env: {{.Values.global.env}}
-    tags.datadoghq.com/env: {{.Values.global.env}}
+    env: env
+    tags.datadoghq.com/env: env
     tags.datadoghq.com/service: rabbitmq
   statefulsetLabels:
-    env: {{.Values.global.env}}
-    tags.datadoghq.com/env: {{.Values.global.env}}
+    env: env
+    tags.datadoghq.com/env: env
     tags.datadoghq.com/service: rabbitmq
   clustering:
     forceBoot: false
