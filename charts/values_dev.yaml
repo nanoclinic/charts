@@ -1,0 +1,146 @@
+global:
+  project_id: nanoclinic-dev
+  env: dev
+  appVersion: ""
+  hostname: api.dev.nanoclinic.com.br
+
+## Define variáveis de ambiente. Exemplo:
+## ENV: dev
+parameters:
+
+
+## defina as informações de imagem do app
+## Exemplo:
+## image: gcr.io/nanoclinic-prod/nanoapp
+## image_tag: v1.2.3
+## imagePullPolicy: Always
+image: concierge
+image_tag: latest
+imagePullPolicy: Always
+
+
+## porta interna do container, que iremos expor com o serviço
+## Exemplo:
+## internalPort: 5000
+internalPort: 5000
+
+
+## adicione labels aos recursos do Chart. Exemplo:
+## team: teamA
+extra_labels:
+  app: concierge
+
+## inicia o app em modo debug, sobrescrevendo o entrypoint do container
+## altere para true caso deseje habilitar modo debug
+debug: false
+debug_command: "sleep"
+debug_args: ["infinity"]
+debugPort:
+
+## Service Account para o pod. Este service account será autenticado via workload identity, diretamente via infra.
+## Assim o pod terá as permissões definidas por este service account sem nenhuma outra config de autenticação necessária.
+## Ref. https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity
+## Exemplo:
+## serviceAccount: nanoapp
+serviceAccount: concierge
+
+## Tipo de serviço para expor o container. ClusterIP é o padrão, mas outros também são suportados
+service:
+  type: ClusterIP
+
+## Definições de recursos, para minimo e máximo de memória e CPU.
+## Vide https://kubernetes.io/docs/tasks/configure-pod-container/quality-service-pod/
+min_memory: 100Mi
+max_memory: 200Mi
+min_cpu: 100m
+# max_cpu: 200m
+
+## Para operações de scale-up e scale-down, defina o número de replicas para o app
+min_replicas: 2
+max_replicas: 4
+
+## Para operações de scale-up e scale-down horizontal defina o trigger
+cpu_percentage_trigger: 80
+ram_percentage_trigger: 80
+
+
+## Para definições de rollout, rolloutSurge inclui um número de pods baseado no número atual para o rollout
+## Por exemplo, com rolloutSurge: 50% e 4 pods, um novo deploy irá incluir 2 pods
+rolloutSurge: 50%
+
+## Quantos pods é aceitável (ou %) que esteja indisponível para continuar a operação de rollout
+## Por exemplo, se temos 50% e 4 pods, um novo deploy irá derrubar 2 pods durante o rollout
+rolloutUnavailable: 0
+
+## Define as rotas a serem expostas para o app no API Gateway
+## Por exemplo:
+## route: nanoapp
+##
+## Esta configuração significa que os requests para o hostname único como api.dev.nanoclinic.com.br/nanoapp
+## serão roteados para este chart. Deve ser único.
+## Deixe em branco se não for expor o serviço via API Gateway
+expose: true
+route: concierge
+health_endpoint: /health
+
+
+## Define URL redirects. Exemplo:
+## /api: /api/v1 redireciona requests com destino /api/** para /api/v1/**
+##
+## Deixe em branco caso nao haja redirects
+redirects:
+
+# Define configurações de migration, a serem rodadas antes do deploy
+migration:
+  enabled: false
+  command:
+  args:
+
+
+## Cria a configuração de health checks:
+## Startup probes: inicia as outras probes apenas quando esta foi bem sucedida
+## Readiness probes: define o comportamento para parar de enviar pacotes via serviço no caso de falha
+## Liveness probes: define o comportamento para reiniciar o app no caso de falha
+##
+## Todas utilizam a mesma probe, mas com diferentes tolerancias, delays e intervalos
+##
+## Exemplos
+# probe_config:
+#   exec:
+#     command:
+#       - node
+#       - scripts/health.js
+#
+# probe_config:
+#   httpGet:
+#     path: /health
+#     port: 5000
+#
+# probe_config:
+#   tcpSocket:
+#     port: 1234
+probe_config:
+  httpGet:
+    path: /health
+    port: 5000
+
+# Deixe em branco caso não queira alguma probe, por exemplo a configuração abaixo desativa todas as probes:
+# startupProbe:
+# livenessProbe:
+# readinessProbe:
+
+# periodSeconds: frequencia para reenviar as probes. Exemplo, a cada  10s
+# timeoutSeconds: em quanto tempo de demora iremos considerar uma falha. Exemplo: se demorar mais de 5s
+# failureThreshold: após quantas falhas reiniciamos
+startupProbe:
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 5
+livenessProbe:
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 5
+readinessProbe:
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 5
