@@ -35,29 +35,29 @@ spec:
         {{- if eq .Values.debug true }}
           - containerPort: {{ .Values.debugPort }}
         {{- end }}
-        {{- if .Values.probe_config }}
-          {{- if .Values.startupProbe }}
-            startupProbe:
-              periodSeconds: {{- .Values.startupProbe.periodSeconds }}
-              timeoutSeconds: {{- .Values.startupProbe.timeoutSeconds }}
-              failureThreshold: {{- .Values.startupProbe.failureThreshold }}
-              {{- .Values.probe_config }}
-          {{- end }}
-          {{- if .Values.livenessProbe }}
-            livenessProbe:
-              periodSeconds: {{- .Values.livenessProbe.periodSeconds }}
-              timeoutSeconds: {{- .Values.livenessProbe.timeoutSeconds }}
-              failureThreshold: {{- .Values.livenessProbe.failureThreshold }}
-              {{- .Values.probe_config }}
-          {{- end }}
-          {{- if .Values.readinessProbe }}
-            readinessProbe:
-              periodSeconds: {{- .Values.readinessProbe.periodSeconds }}
-              timeoutSeconds: {{- .Values.readinessProbe.timeoutSeconds }}
-              failureThreshold: {{- .Values.readinessProbe.failureThreshold}}
-              {{- .Values.probe_config }}
-          {{- end }}
+      {{- if .Values.probe_config }}
+        {{- if .Values.startupProbe }}
+          startupProbe:
+            periodSeconds: {{ .Values.startupProbe.periodSeconds | quote }}
+            timeoutSeconds: {{ .Values.startupProbe.timeoutSeconds | quote }}
+            failureThreshold: {{ .Values.startupProbe.failureThreshold | quote }}
+            {{- .Values.probe_config }}
         {{- end }}
+        {{- if .Values.livenessProbe }}
+          livenessProbe:
+            periodSeconds: {{ .Values.livenessProbe.periodSeconds | quote }}
+            timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds | quote }}
+            failureThreshold: {{ .Values.livenessProbe.failureThreshold | quote }}
+            {{- .Values.probe_config }}
+        {{- end }}
+        {{- if .Values.readinessProbe }}
+          readinessProbe:
+            periodSeconds: {{ .Values.readinessProbe.periodSeconds | quote }}
+            timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds | quote }}
+            failureThreshold: {{ .Values.readinessProbe.failureThreshold | quote }}
+            {{- .Values.probe_config }}
+        {{- end }}
+      {{- end }}
         {{- if ne .Values.debug true }}
           resources:
             requests:
@@ -70,10 +70,10 @@ spec:
           args: {{- .Values.debug_args }}
         {{- end }}
           env:
-            {{- range $key,$value:= .Values.parameters }}
-              - name: {{ $key | replace "-" "_" }}
-                value: {{ $value }}
-            {{- end }}
+        {{- range $key,$value:= .Values.parameters }}
+          - name: {{ upper $key | replace "-" "_" }}
+            value: {{ $value | quote }}
+        {{- end }}
     {{- if eq .Values.migration.enabled true }}
       initContainers:
         - name: {{ .Release.Name }}-db-migrator
@@ -82,8 +82,8 @@ spec:
           command: {{ .Values.migration.command }}
           args: {{ .Values.migration.args }}
           env:
-            {{- range $key,$value:= .Values.parameters }}
-              - name: {{ $key | replace "-" "_" }}
-                value: {{ $value }}
-            {{- end }}
+        {{- range $key,$value:= .Values.parameters }}
+          - name: {{ upper $key | replace "-" "_" }}
+            value: {{ $value | quote }}
+        {{- end }}
     {{- end }}

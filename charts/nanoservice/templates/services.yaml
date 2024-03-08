@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: {{ .Release.Name }}
 {{- include "all.labels" . | indent 2 }}
-  app: {{ .Release.Name }}
+    app: {{ .Release.Name }}
 spec:
   selector:
     app: {{ .Release.Name }}
