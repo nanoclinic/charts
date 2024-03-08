@@ -37,7 +37,7 @@ rabbitmq:
   serviceAccount:
     name: "backend"
     create: false
-  clusterDomain: kube.{{.Values.global.env}}.nursa.internal
+  clusterDomain: cluster.local
   containerPorts:
     metrics: 9419
   service:
