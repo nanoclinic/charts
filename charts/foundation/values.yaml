@@ -6,4 +6,3 @@ global:
 
 api_gateway:
   certificate: ""
-  reserved_ip_name: ""
