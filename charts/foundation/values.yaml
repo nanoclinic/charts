@@ -6,7 +6,7 @@ global:
 
 api_gateway:
   certificate: ""
-  reserved_ip_name: ""
+  ip_address: ""
 
 rabbitmq:
   enabled: true

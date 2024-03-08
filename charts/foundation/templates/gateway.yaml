@@ -13,5 +13,5 @@ spec:
         options:
           networking.gke.io/pre-shared-certs: {{ .Values.api_gateway.certificate }}
   addresses:
-  - type: NamedAddress
-    value: {{ .Values.api_gateway.reserved_ip_name }}
+  - type: IPAddress
+    value: {{ .Values.api_gateway.ip_address }}
