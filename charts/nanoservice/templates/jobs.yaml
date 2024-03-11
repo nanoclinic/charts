@@ -5,7 +5,7 @@ metadata:
   name: {{ .Release.Name }}-migration
   namespace: {{ .Release.Namespace }}
 {{- include "migration.labels" . | indent 2 }}
-{{- include "common.annotations" . | indent 2 }}
+{{- include "migration.annotations" . | indent 6 }}
 spec:
   template:
     metadata:
@@ -23,7 +23,7 @@ spec:
           ports:
           - containerPort: {{ .Values.internalPort }}
         {{- if eq .Values.debug true }}
-          - containerPort: {{ .Values.debugPort }}
+          - containerPort: {{ .Values.debug.port }}
         {{- end }}
         {{- if ne .Values.debug true }}
           resources:
@@ -32,7 +32,12 @@ spec:
             limits:
               cpu: {{ .Values.max_cpu }}
         {{- end }}
-        {{- if eq .Values.debug true }}
+        {{- if eq .Values.debug.enabled true }}
+          command:
+            {{ range $arg:= .Values.debug.command }}
+            - {{$arg | quote}}
+            {{- end }}
+        {{- else }}
           command:
             {{ range $arg:= .Values.migration.command }}
             - {{$arg | quote}}

@@ -26,11 +26,12 @@ internalPort: 5000
 
 ## inicia o app em modo debug, sobrescrevendo o entrypoint do container
 ## altere para true caso deseje habilitar modo debug
-debug: false
-debug_command:
+debug:
+  enabled: false
+  command:
   - sleep
   - infinity
-debugPort: 10000
+  port: 10000
 
 ## Service Account para o pod. Este service account será autenticado via workload identity, diretamente via infra.
 ## Assim o pod terá as permissões definidas por este service account sem nenhuma outra config de autenticação necessária.

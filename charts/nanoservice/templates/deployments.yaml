@@ -50,8 +50,8 @@ spec:
           imagePullPolicy: {{ .Values.imagePullPolicy }}
           ports:
           - containerPort: {{ .Values.internalPort }}
-        {{- if eq .Values.debug true }}
-          - containerPort: {{ .Values.debugPort }}
+        {{- if eq .Values.debug.enabled true }}
+          - containerPort: {{ .Values.debug.port }}
         {{- end }}
       {{- if .Values.probe_config }}
         {{- if .Values.startupProbe }}
@@ -83,9 +83,9 @@ spec:
             limits:
               cpu: {{ .Values.max_cpu }}
         {{- end }}
-        {{- if eq .Values.debug true }}
+        {{- if eq .Values.debug.enabled true }}
           command:
-            {{ range $arg:= .Values.debug_command }}
+            {{ range $arg:= .Values.debug.command }}
             - {{$arg | quote}}
             {{- end }}
         {{- end }}
