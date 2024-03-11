@@ -1,8 +1,8 @@
 global:
-  project_id: ""
-  env: ""
-  app_version: ""
-  hostname: ""
+  project_id: "project_id"
+  env: "env"
+  app_version: "0.0.1"
+  hostname: "api.env.nanoclinic.com.br"
 
 ## Define variáveis de ambiente. Exemplo:
 ## ENV: dev
@@ -74,8 +74,8 @@ rolloutUnavailable: 0
 ## serão roteados para este chart. Deve ser único.
 ## Deixe em branco se não for expor o serviço via API Gateway
 expose: true
-route:
-# health_endpoint: nil
+route: /nanoservice
+health_endpoint: /health
 
 
 ## Define URL redirects. Exemplo:

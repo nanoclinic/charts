@@ -15,9 +15,9 @@ spec:
       - path:
           type: PathPrefix
         {{- if eq .Values.route "" }}
-          value: {{ .Release.Name }}
+          value: {{ printf "/%" .Release.Name }}
         {{- else }}
-          value: {{ printf "/%s" .Values.route }}
+          value: {{ printf "%s" .Values.route }}
         {{- end }}
       filters:
       - type: URLRewrite
