@@ -1,5 +1,23 @@
 {{- /* backend deployment */}}
 
+{{ define "probe" }}
+{{- if .Values.probe_config.httpGet }}
+httpGet:
+  path: {{ .Values.probe_config.httpGet.path }}
+  port: {{ .Values.probe_config.httpGet.port }}
+{{- else if .Values.probe_config.tcpSocket}}
+tcpSocket:
+  port: {{ .Values.probe_config.tcpSocket.port }}
+{{- else if .Values.probe_config.exec }}
+exec:
+  command:
+    {{- range $i := .Values.probe_config.exec.command}}
+    - {{ $i }}
+    {{- end }}
+{{- end }}
+{{- end }}
+
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -19,9 +37,9 @@ spec:
   replicas: {{ .Values.min_replicas }}
   template:
     metadata:
-{{- include "all.labels" . | indent 6 }}
+        {{- include "all.labels" . | indent 6 }}
         app: {{ .Release.Name }}
-{{- include "common.annotations" . | indent 6 }}
+        {{- include "common.annotations" . | indent 6 }}
     spec:
       serviceAccountName: {{ .Values.serviceAccount }}
       nodeSelector:
@@ -41,21 +59,21 @@ spec:
             periodSeconds: {{ .Values.startupProbe.periodSeconds | quote }}
             timeoutSeconds: {{ .Values.startupProbe.timeoutSeconds | quote }}
             failureThreshold: {{ .Values.startupProbe.failureThreshold | quote }}
-            {{- .Values.probe_config }}
+            {{- include "probe" . | indent 12}}
         {{- end }}
         {{- if .Values.livenessProbe }}
           livenessProbe:
             periodSeconds: {{ .Values.livenessProbe.periodSeconds | quote }}
             timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds | quote }}
             failureThreshold: {{ .Values.livenessProbe.failureThreshold | quote }}
-            {{- .Values.probe_config }}
+            {{- include "probe" . | indent 12}}
         {{- end }}
         {{- if .Values.readinessProbe }}
           readinessProbe:
             periodSeconds: {{ .Values.readinessProbe.periodSeconds | quote }}
             timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds | quote }}
             failureThreshold: {{ .Values.readinessProbe.failureThreshold | quote }}
-            {{- .Values.probe_config }}
+            {{- include "probe" . | indent 12}}
         {{- end }}
       {{- end }}
         {{- if ne .Values.debug true }}

@@ -26,7 +26,7 @@ internalPort: 5000
 
 ## inicia o app em modo debug, sobrescrevendo o entrypoint do container
 ## altere para true caso deseje habilitar modo debug
-debug: false
+enable_debug: false
 debug_command: "sleep"
 debug_args: ["infinity"]
 debugPort:
@@ -103,20 +103,16 @@ migration:
 #   exec:
 #     command:
 #       - node
-#       - scripts/health.js
+      # - scripts/health.js
+#
+# probe_config:
+#   tcpSocket:
+#     port: 1234
 #
 # probe_config:
 #   httpGet:
 #     path: /health
 #     port: 5000
-#
-# probe_config:
-#   tcpSocket:
-#     port: 1234
-probe_config:
-  httpGet:
-    path: /health
-    port: 5000
 
 # Deixe em branco caso não queira alguma probe, por exemplo a configuração abaixo desativa todas as probes:
 # startupProbe:
