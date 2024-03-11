@@ -90,7 +90,7 @@ migration:
   enabled: true
   command:
     - sleep
-    - 10
+    - 30
 
 
 ## Cria a configuração de health checks:
@@ -136,3 +136,11 @@ readinessProbe:
   periodSeconds: 10
   timeoutSeconds: 5
   failureThreshold: 5
+
+
+# Define configurações de um init container, com a mesma imagem a serem rodadas antes do start de um pod
+init_container:
+  enabled: false
+  command:
+    - sleep
+    - 10

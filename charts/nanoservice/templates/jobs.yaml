@@ -1,46 +1,18 @@
-{{- /* backend deployment */}}
 
-{{ define "probe" }}
-{{- if .Values.probe_config.httpGet }}
-httpGet:
-  path: {{ .Values.probe_config.httpGet.path }}
-  port: {{ .Values.probe_config.httpGet.port }}
-{{- else if .Values.probe_config.tcpSocket}}
-tcpSocket:
-  port: {{ .Values.probe_config.tcpSocket.port }}
-{{- else if .Values.probe_config.exec }}
-exec:
-  command:
-    {{- range $i := .Values.probe_config.exec.command}}
-    - {{ $i }}
-    {{- end }}
-{{- end }}
-{{- end }}
-
-
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: batch/v1
+kind: Job
 metadata:
-  name: {{ .Release.Name }}
+  name: {{ .Release.Name }}-migration
   namespace: {{ .Release.Namespace }}
-{{- include "all.labels" . | indent 2 }}
+{{- include "migration.labels" . | indent 2 }}
 {{- include "common.annotations" . | indent 2 }}
 spec:
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxSurge: {{ .Values.rolloutSurge }}
-      maxUnavailable: {{ .Values.rolloutUnavailable }}
-  selector:
-    matchLabels:
-      app: {{ .Release.Name }}
-  replicas: {{ .Values.min_replicas }}
   template:
     metadata:
-        {{- include "all.labels" . | indent 6 }}
-        app: {{ .Release.Name }}
-        {{- include "common.annotations" . | indent 6 }}
+      {{- include "migration.labels" . | indent 6 }}
+      {{- include "migration.annotations" . | indent 6 }}
     spec:
+      restartPolicy: Never
       serviceAccountName: {{ .Values.serviceAccount }}
       nodeSelector:
         iam.gke.io/gke-metadata-server-enabled: "true"
@@ -85,7 +57,7 @@ spec:
         {{- end }}
         {{- if eq .Values.debug true }}
           command:
-            {{ range $arg:= .Values.debug_command }}
+            {{ range $arg:= .Values.migration.command }}
             - {{$arg | quote}}
             {{- end }}
         {{- end }}
@@ -94,18 +66,3 @@ spec:
           - name: {{ upper $key | replace "-" "_" }}
             value: {{ $value | quote }}
         {{- end }}
-    {{- if eq .Values.init_container.enabled true }}
-      initContainers:
-        - name: {{ .Release.Name }}-db-migrator
-          image: {{ printf "%s:%s" .Values.image .Values.image_tag }}
-          imagePullPolicy: {{ .Values.imagePullPolicy }}
-          command:
-            {{ range $arg:= .Values.init_container.command }}
-            - {{$arg | quote}}
-            {{- end }}
-          env:
-        {{- range $key,$value:= .Values.parameters }}
-          - name: {{ upper $key | replace "-" "_" }}
-            value: {{ $value | quote }}
-        {{- end }}
-    {{- end }}
