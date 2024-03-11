@@ -25,28 +25,6 @@ spec:
         {{- if eq .Values.debug true }}
           - containerPort: {{ .Values.debugPort }}
         {{- end }}
-      {{- if .Values.probe_config }}
-        {{- if .Values.startupProbe }}
-          startupProbe:
-            periodSeconds: {{ .Values.startupProbe.periodSeconds }}
-            timeoutSeconds: {{ .Values.startupProbe.timeoutSeconds }}
-            failureThreshold: {{ .Values.startupProbe.failureThreshold }}
-            {{- include "probe" . | indent 12}}
-        {{- end }}
-        {{- if .Values.livenessProbe }}
-          livenessProbe:
-            periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
-            timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
-            failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
-            {{- include "probe" . | indent 12}}
-        {{- end }}
-        {{- if .Values.readinessProbe }}
-          readinessProbe:
-            periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
-            timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
-            failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
-            {{- include "probe" . | indent 12}}
-        {{- end }}
       {{- end }}
         {{- if ne .Values.debug true }}
           resources:
