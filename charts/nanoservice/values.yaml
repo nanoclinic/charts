@@ -14,8 +14,8 @@ parameters: {}
 ## image: gcr.io/nanoclinic-prod/nanoapp
 ## image_tag: v1.2.3
 ## imagePullPolicy: Always
-image: image
-image_tag: tag
+image: ubuntu
+image_tag: latest
 imagePullPolicy: Always
 
 
@@ -26,10 +26,11 @@ internalPort: 5000
 
 ## inicia o app em modo debug, sobrescrevendo o entrypoint do container
 ## altere para true caso deseje habilitar modo debug
-enable_debug: false
-debug_command: "sleep"
-debug_args: ["infinity"]
-debugPort:
+debug: false
+debug_command:
+  - sleep
+  - infinity
+debugPort: 10000
 
 ## Service Account para o pod. Este service account será autenticado via workload identity, diretamente via infra.
 ## Assim o pod terá as permissões definidas por este service account sem nenhuma outra config de autenticação necessária.
@@ -86,9 +87,10 @@ redirects:
 
 # Define configurações de migration, a serem rodadas antes do deploy
 migration:
-  enabled: false
+  enabled: true
   command:
-  args:
+    - sleep
+    - 10
 
 
 ## Cria a configuração de health checks:

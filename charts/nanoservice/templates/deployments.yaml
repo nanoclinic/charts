@@ -84,8 +84,10 @@ spec:
               cpu: {{ .Values.max_cpu }}
         {{- end }}
         {{- if eq .Values.debug true }}
-          command: {{- .Values.debug_command }}
-          args: {{- .Values.debug_args }}
+          command:
+            {{ range $arg:= .Values.debug_command }}
+            - {{$arg | quote}}
+            {{- end }}
         {{- end }}
           env:
         {{- range $key,$value:= .Values.parameters }}
@@ -97,8 +99,10 @@ spec:
         - name: {{ .Release.Name }}-db-migrator
           image: {{ printf "%s:%s" .Values.image .Values.image_tag }}
           imagePullPolicy: {{ .Values.imagePullPolicy }}
-          command: {{ .Values.migration.command }}
-          args: {{ .Values.migration.args }}
+          command:
+            {{ range $arg:= .Values.migration.commanf }}
+            - {{$arg | quote}}
+            {{- end }}
           env:
         {{- range $key,$value:= .Values.parameters }}
           - name: {{ upper $key | replace "-" "_" }}
