@@ -56,23 +56,23 @@ spec:
       {{- if .Values.probe_config }}
         {{- if .Values.startupProbe }}
           startupProbe:
-            periodSeconds: {{ .Values.startupProbe.periodSeconds | quote }}
-            timeoutSeconds: {{ .Values.startupProbe.timeoutSeconds | quote }}
-            failureThreshold: {{ .Values.startupProbe.failureThreshold | quote }}
+            periodSeconds: {{ .Values.startupProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.startupProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.startupProbe.failureThreshold }}
             {{- include "probe" . | indent 12}}
         {{- end }}
         {{- if .Values.livenessProbe }}
           livenessProbe:
-            periodSeconds: {{ .Values.livenessProbe.periodSeconds | quote }}
-            timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds | quote }}
-            failureThreshold: {{ .Values.livenessProbe.failureThreshold | quote }}
+            periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
             {{- include "probe" . | indent 12}}
         {{- end }}
         {{- if .Values.readinessProbe }}
           readinessProbe:
-            periodSeconds: {{ .Values.readinessProbe.periodSeconds | quote }}
-            timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds | quote }}
-            failureThreshold: {{ .Values.readinessProbe.failureThreshold | quote }}
+            periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
             {{- include "probe" . | indent 12}}
         {{- end }}
       {{- end }}
