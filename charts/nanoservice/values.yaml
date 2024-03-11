@@ -29,8 +29,8 @@ internalPort: 5000
 debug:
   enabled: false
   command:
-  - sleep
-  - infinity
+    - sleep
+    - infinity
   port: 10000
 
 ## Service Account para o pod. Este service account será autenticado via workload identity, diretamente via infra.

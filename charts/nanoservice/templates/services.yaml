@@ -12,11 +12,11 @@ spec:
     protocol: TCP
     port: {{ .Values.internalPort }}
     targetPort: {{ .Values.internalPort }}
-{{- if eq .Values.debug true }}
+{{- if eq .Values.debug.enabled true }}
   - name: {{ .Release.Name }}-debug-port
     protocol: TCP
-    port: {{ .Values.debugPort }}
-    targetPort: {{ .Values.debugPort }}
+    port: {{ .Values.debug.port }}
+    targetPort: {{ .Values.debug.port }}
 {{- end }}
 
 ---

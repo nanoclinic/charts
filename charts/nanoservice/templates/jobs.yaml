@@ -5,7 +5,7 @@ metadata:
   name: {{ .Release.Name }}-migration
   namespace: {{ .Release.Namespace }}
 {{- include "migration.labels" . | indent 2 }}
-{{- include "migration.annotations" . | indent 6 }}
+{{- include "migration.annotations" . | indent 2 }}
 spec:
   template:
     metadata:
@@ -22,10 +22,10 @@ spec:
           imagePullPolicy: {{ .Values.imagePullPolicy }}
           ports:
           - containerPort: {{ .Values.internalPort }}
-        {{- if eq .Values.debug true }}
+        {{- if eq .Values.debug.enabled true }}
           - containerPort: {{ .Values.debug.port }}
         {{- end }}
-        {{- if ne .Values.debug true }}
+        {{- if ne .Values.debug.enabled true }}
           resources:
             requests:
               cpu: {{ .Values.min_cpu }}

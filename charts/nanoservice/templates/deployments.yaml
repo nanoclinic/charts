@@ -76,7 +76,7 @@ spec:
             {{- include "probe" . | indent 12}}
         {{- end }}
       {{- end }}
-        {{- if ne .Values.debug true }}
+        {{- if ne .Values.debug.enabled true }}
           resources:
             requests:
               cpu: {{ .Values.min_cpu }}
