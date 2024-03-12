@@ -32,7 +32,15 @@ annotations:
 
 {{- define "migration.annotations" }}
 annotations:
-  "helm.sh/hook": pre-install,pre-upgrade
-  "helm.sh/hook-weight": "-100"
-  "helm.sh/hook-delete-policy": hook-succeeded,hook-failed
+  helm.sh/hook: pre-install,pre-upgrade
+  helm.sh/hook-weight: "1"
+  helm.sh/hook-delete-policy: hook-succeeded,hook-failed
+{{- end }}
+
+{{- define "sa.annotations" }}
+annotations:
+  iam.gke.io/gcp-service-account: {{ printf "%s@%s.iam.gserviceaccount.com" .Values.serviceAccount .Values.global.project_id }}
+  helm.sh/hook: pre-install,pre-upgrade
+  helm.sh/hook-weight: "0"
+  helm.sh/hook-delete-policy: hook-failed
 {{- end }}
