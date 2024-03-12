@@ -1,11 +1,12 @@
 
+{{- if .Values.migration.enabled }}
 apiVersion: batch/v1
 kind: Job
 metadata:
   name: {{ .Release.Name }}-migration
   namespace: {{ .Release.Namespace }}
-{{- include "migration.labels" . | indent 2 }}
-{{- include "migration.annotations" . | indent 2 }}
+  {{- include "migration.labels" . | indent 2 }}
+  {{- include "migration.annotations" . | indent 2 }}
 spec:
   template:
     metadata:
@@ -48,3 +49,4 @@ spec:
           - name: {{ upper $key | replace "-" "_" }}
             value: {{ $value | quote }}
         {{- end }}
+{{- end }}
