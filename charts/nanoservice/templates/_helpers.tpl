@@ -40,7 +40,7 @@ annotations:
 {{- define "sa.annotations" }}
 annotations:
   iam.gke.io/gcp-service-account: {{ printf "%s@%s.iam.gserviceaccount.com" .Values.serviceAccount .Values.global.project_id }}
-  helm.sh/hook: pre-install,pre-upgrade
+  helm.sh/hook: pre-install
   helm.sh/hook-weight: "0"
   helm.sh/hook-delete-policy: hook-failed
 {{- end }}
