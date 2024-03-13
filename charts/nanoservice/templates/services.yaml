@@ -28,9 +28,9 @@ metadata:
   name: {{ .Release.Name }}-healthcheck
 spec:
   default:
-    checkIntervalSec: 1
-    timeoutSec: 1
-    healthyThreshold: 1
+    checkIntervalSec: 10
+    timeoutSec: 2
+    healthyThreshold: 2
     unhealthyThreshold: 1
     logConfig:
       enabled: true
