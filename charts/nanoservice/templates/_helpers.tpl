@@ -34,7 +34,7 @@ annotations:
 annotations:
   helm.sh/hook: pre-install,pre-upgrade
   helm.sh/hook-weight: "1"
-  helm.sh/hook-delete-policy: hook-succeeded,hook-failed
+  helm.sh/hook-delete-policy: hook-succeeded,hook-failed,before-hook-creation
 {{- end }}
 
 {{- define "sa.annotations" }}
