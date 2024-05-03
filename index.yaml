@@ -2,6 +2,14 @@ apiVersion: v1
 entries:
   foundation:
   - apiVersion: v2
+    created: "2024-05-03T19:38:47.062184556Z"
+    description: Chart for the namespace initial configuration
+    digest: 65ce101b2e028e6e527ca63f55c627500cc7a7ffca79eada92fa54cffb69139c
+    name: foundation
+    urls:
+    - https://github.com/nanoclinic/charts/releases/download/foundation-1.3.1/foundation-1.3.1.tgz
+    version: 1.3.1
+  - apiVersion: v2
     created: "2024-03-08T03:20:46.622330023Z"
     description: Chart for the namespace initial configuration
     digest: 6d8a523ee032c868d97ccfe2156ef15d9c36ef7a135976e618ed5a7576981d95
@@ -202,4 +210,4 @@ entries:
     urls:
     - https://github.com/nanoclinic/charts/releases/download/nanoservice-1.0.0/nanoservice-1.0.0.tgz
     version: 1.0.0
-generated: "2024-05-02T21:45:49.082097494Z"
+generated: "2024-05-03T19:38:47.062254627Z"
