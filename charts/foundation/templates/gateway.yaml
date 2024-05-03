@@ -12,3 +12,9 @@ spec:
         mode: Terminate
         options:
           networking.gke.io/pre-shared-certs: {{ .Values.api_gateway.certificate }}
+      allowedRoutes:
+        namespaces:
+          from: All
+  addresses:
+    - type: NamedAddress
+      value: ${{ printf "api-gw-ip-%s" .Values.global.env }}
