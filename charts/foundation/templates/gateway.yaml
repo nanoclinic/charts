@@ -17,4 +17,4 @@ spec:
           from: All
   addresses:
     - type: NamedAddress
-      value: ${{ printf "api-gw-ip-%s" .Values.global.env }}
+      value: ${{ printf "api-gw-ip-%s" .Values.global.project_id }}
