@@ -92,7 +92,7 @@ spec:
           env:
         {{- range $key,$value:= .Values.parameters }}
           {{- if $.Values.env_prefix }}
-          - name: {{ printf "%s%s" $.Values.env_prefix (upper $key | replace "-" "_") }}
+          - name: {{ printf "%s%s" (upper $.Values.env_prefix) (upper $key | replace "-" "_") }}
           {{- else }}
           - name: {{ printf "%s" (upper $key | replace "-" "_") }}
           {{- end }}
@@ -110,7 +110,7 @@ spec:
           env:
         {{- range $key,$value:= .Values.parameters }}
           {{- if $.Values.env_prefix }}
-          - name: {{ printf "%s%s" $.Values.env_prefix (upper $key | replace "-" "_") }}
+          - name: {{ printf "%s%s" (upper $.Values.env_prefix) (upper $key | replace "-" "_") }}
           {{- else }}
           - name: {{ printf "%s" (upper $key | replace "-" "_") }}
           {{- end }}
