@@ -45,12 +45,16 @@ spec:
             {{- end }}
         {{- end }}
           env:
-        {{- range $key,$value:= .Values.parameters }}
-          {{- if $.Values.env_prefix }}
-          - name: {{ printf "%s%s" (upper $.Values.env_prefix) (upper $key | replace "-" "_") }}
-          {{- else }}
-          - name: {{ printf "%s" (upper $key | replace "-" "_") }}
+            - name: ENV
+              value: {{ .Values.global.env }}
+            - name: PROJECT_ID
+              value: {{ .Values.global.project_id }}
+          {{- range $key,$value:= .Values.parameters }}
+            {{- if $.Values.env_prefix }}
+            - name: {{ printf "%s%s" (upper $.Values.env_prefix) (upper $key | replace "-" "_") }}
+            {{- else }}
+            - name: {{ printf "%s" (upper $key | replace "-" "_") }}
+            {{- end }}
+              value: {{ $value | quote }}
           {{- end }}
-            value: {{ $value | quote }}
-        {{- end }}
 {{- end }}
