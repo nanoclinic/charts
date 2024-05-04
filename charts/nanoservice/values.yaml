@@ -6,6 +6,8 @@ global:
 
 ## Define variáveis de ambiente. Exemplo:
 ## ENV: dev
+## caso queiramos adicionar um prefixo as variaveis de ambiente, podemos utilizar env_prefix: prefix_ por exemplo
+env_prefix:
 parameters: {}
 
 
@@ -38,7 +40,7 @@ debug:
 ## Ref. https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity
 ## Exemplo:
 ## serviceAccount: nanoapp
-serviceAccount: ""
+serviceAccount: default
 
 ## Tipo de serviço para expor o container. ClusterIP é o padrão, mas outros também são suportados
 service:
