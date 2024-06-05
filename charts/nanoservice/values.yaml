@@ -1,147 +1,176 @@
 global:
-  project_id: "project_id"
-  env: "env"
-  app_version: "0.0.1"
-  hostname: "api.env.nanoclinic.com.br"
+  project_id: project_id
+  env: env
+  appVersion: "1.0.0"
+  overrideName: ""
+  additionalLabels: {}
 
-## Define variáveis de ambiente. Exemplo:
+## Define Environment Variables. Example:
 ## ENV: dev
-## caso queiramos adicionar um prefixo as variaveis de ambiente, podemos utilizar env_prefix: prefix_ por exemplo
-env_prefix:
 parameters: {}
 
+## Add secrets from a list that will be mounted as environment variables.
+## The serviceAccount defined must have permissions to access this secret, check the terraform module service_accounts in `microservices` repo
+## secrets:
+##   - secretA
+##   - secretB
+secrets: []
 
-## defina as informações de imagem do app
-## Exemplo:
-## image: gcr.io/nanoclinic-prod/nanoapp
+## Define app image information
+## Example:
+## image: gcr.io/nanoclinic-common/microservice
 ## image_tag: v1.2.3
 ## imagePullPolicy: Always
-image: ubuntu
-image_tag: latest
+image: nginx
+image_tag: bullseye
 imagePullPolicy: Always
 
+migration:
+  enabled: false
+  command: sleep 10
 
-## porta interna do container, que iremos expor com o serviço
-## Exemplo:
-## internalPort: 5000
-internalPort: 5000
-
-## inicia o app em modo debug, sobrescrevendo o entrypoint do container
-## altere para true caso deseje habilitar modo debug
+## Start the app in debug mode, overriding the entrypoint command
+## Change this accordingly to your needs.
+## The configuration below is disabled, but sleep infinity is a good debug command
+## For the container to start and you can SSH into it to debug the internals
+## You can expose an additional port if you need other commands or more powerful debug options, such as attaching a debugger
 debug:
   enabled: false
-  command:
-    - sleep
-    - infinity
+  command: sleep infinity
   port: 10000
 
-## Service Account para o pod. Este service account será autenticado via workload identity, diretamente via infra.
-## Assim o pod terá as permissões definidas por este service account sem nenhuma outra config de autenticação necessária.
+## Service Account name for the app. The service account is required for every app.
+## We can integrate with Google Service Accounts so the app has access to google services by Identity Workload Federation.
 ## Ref. https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity
-## Exemplo:
-## serviceAccount: nanoapp
-serviceAccount: default
+## For the Workload Identity Federation to work, the service account needs to have a binding in place from google side.
+## Example:
+## serviceAccount: microservice-sa
+serviceAccount: default-sa
 
-## Tipo de serviço para expor o container. ClusterIP é o padrão, mas outros também são suportados
+## Type of Kubernetes service to connect to the app. ClusterIP is the default, but all others are supported.
+## Check https://kubernetes.io/docs/concepts/services-networking/service/
 service:
   type: ClusterIP
 
-## Definições de recursos, para minimo e máximo de memória e CPU.
+## Container internal port to expose the service
+## If you don't want to expose any ports, just leave the value as 0
+## Ensure for it not to be 0 if you set expose = true
+## Example:
+## internalPort: 5000
+  internalPort: 0
+
+# ----- Autoscaling ------
+## Define resource limits, for min and max of memory/CPU. This is related to vertical scaling.
 ## Vide https://kubernetes.io/docs/tasks/configure-pod-container/quality-service-pod/
-min_memory: 100Mi
-max_memory: 200Mi
-min_cpu: 100m
-max_cpu: 200m
+## Leave the values empty if you don't wish to reserve a minimum or set a maximum
 
-## Para operações de scale-up e scale-down, defina o número de replicas para o app
-min_replicas: 2
-max_replicas: 2
+autoscaling:
+  min_memory:
+  max_memory:
+  min_cpu:
+  max_cpu:
 
-## Para operações de scale-up e scale-down horizontal defina o trigger
-cpu_percentage_trigger: 80
-ram_percentage_trigger: 80
+## For scale-up/down operation, define the number of replicas of the app.
+## We recommend for the minimum to be 2 or more, unless there is a specific need for a single replica.
+## For instance, the cron scheduler app needs to have a single replica because of its nature.
+## Cluster infrastructure scaling depends on highly available workloads for its operations
+  min_replicas: 2
+  max_replicas: 2
+
+## For horizontal scale-up e scale-down operations, define the % to trigger it
+  cpu_percentage_trigger: 80
+  ram_percentage_trigger: 80
 
 
-## Para definições de rollout, rolloutSurge inclui um número de pods baseado no número atual para o rollout
-## Por exemplo, com rolloutSurge: 50% e 4 pods, um novo deploy irá incluir 2 pods
-rolloutSurge: 50%
+## ----- Deployment ------
+## For rollout definitions, rolloutSurge adds a fraction of existing pods in the process of releasing a new verion
+## For instance, a rolloutSurge of 50% and 4 running pods, a new deploy adds 2 pods, when they are ready, we delete 2 from the old deployment, and so on
+deployment:
+  rolloutSurge: 50%
 
-## Quantos pods é aceitável (ou %) que esteja indisponível para continuar a operação de rollout
-## Por exemplo, se temos 50% e 4 pods, um novo deploy irá derrubar 2 pods durante o rollout
-rolloutUnavailable: 0
+## How many pods it's acceptable (or % of pods) to be unavailable in the rollout operation
+## For instance, a rolloutUnavailable of 50% e 4 pods, a new deployment will start deleting 2 pods at the same time of adding new pods
+## from the rolloutSurge
+# rolloutUnavailable: 20%
+  rolloutUnavailable: 0
 
-## Define as rotas a serem expostas para o app no API Gateway
-## Por exemplo:
-## route: nanoapp
+## Define the route to expose your app in API Gateway
+## Example:
+## route: myappname
 ##
-## Esta configuração significa que os requests para o hostname único como api.dev.nanoclinic.com.br/nanoapp
-## serão roteados para este chart. Deve ser único.
-## Deixe em branco se não for expor o serviço via API Gateway
-expose: true
-route: /nanoservice
-health_endpoint: /health
+## This configuration means that the requests to the <api_gateway.hostname>/<route> will
+## be routed to this app. Must be globally unique accross all microservices.
+## You need to point the existing API Gateway to add this route, with the name and the namespace where it lives
+## Set it to false if you don't need to expose the service to the API Gateway
+## The api_gateway_name, namespace and hostname blocks supports templating for dynamic environments,
+## such as "api-gateway-{{ .Release.Namespace }}"
+api_gateway:
+  api_gateway_name: api-gateway-foundation
+  namespace: foundation
+  expose: false
+  hostname: api.{{ .Values.global.env }}.nanoclinic.com.br
+  route: /app
+  health_endpoint: /health
 
-
-## Define URL redirects. Exemplo:
-## /api: /api/v1 redireciona requests com destino /api/** para /api/v1/**
+## Define URL redirects. Example:
+## /api: /api/v1
+## the example above redirects requests com from /api/** to /api/v1/**
 ##
-## Deixe em branco caso nao haja redirects
-redirects:
+## Leave it blank if there are no redirects
+  redirects:
 
-# Define configurações de migration, a serem rodadas antes do deploy
-migration:
-  enabled: true
-  command:
-    - sleep
-    - 30
-
-
-## Cria a configuração de health checks:
-## Startup probes: inicia as outras probes apenas quando esta foi bem sucedida
-## Readiness probes: define o comportamento para parar de enviar pacotes via serviço no caso de falha
-## Liveness probes: define o comportamento para reiniciar o app no caso de falha
+## Creates the health checks configs:
+## Startup probes: recognizes that the app has started, and starts the next probes
+## Readiness probes: recognizes if the pod is ready to receive requests. If not, no packets are sent to the pod
+## Liveness probes: recognizes if the pod is healthy. If not, the pod is stopped with a SIGTERM signal and after 30s a SIGKILL signal
 ##
-## Todas utilizam a mesma probe, mas com diferentes tolerancias, delays e intervalos
+## They will all use the same "probe test", but with different frequency and tolerance
+## Refe
 ##
-## Exemplos
-# probe_config:
+## Examples
+# probeConfig:
 #   exec:
 #     command:
 #       - node
-      # - scripts/health.js
+#       - scripts/health.js
 #
-# probe_config:
+# probeConfig:
 #   tcpSocket:
 #     port: 1234
 #
-# probe_config:
+# probeConfig:
 #   httpGet:
 #     path: /health
 #     port: 5000
-
-# Deixe em branco caso não queira alguma probe, por exemplo a configuração abaixo desativa todas as probes:
+#
+#
 # startupProbe:
+#   periodSeconds: 10
+#   timeoutSeconds: 5
+#   failureThreshold: 5
 # livenessProbe:
+#   periodSeconds: 10
+#   timeoutSeconds: 5
+#   failureThreshold: 5
 # readinessProbe:
+#   periodSeconds: 10
+#   timeoutSeconds: 5
+#   failureThreshold: 5
+##
+## periodSeconds: Frequency of the probe. Example, every 10s
+## timeoutSeconds: How long we wait for a response before considering the probe as failed. Example: timeout of 5s
+## failureThreshold: after how many failures we consider the state as unhealthy.
+## For instance, after 3 failures of the liveness probe, we restart the app, but only after 1 failure we stop sending traffic with the readiness probe
+## Ref/ https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
 
-# periodSeconds: frequencia para reenviar as probes. Exemplo, a cada  10s
-# timeoutSeconds: em quanto tempo de demora iremos considerar uma falha. Exemplo: se demorar mais de 5s
-# failureThreshold: após quantas falhas reiniciamos
+## Fill the config below with your probes as described above
+probeConfig:
 startupProbe:
-  periodSeconds: 10
-  timeoutSeconds: 5
-  failureThreshold: 5
 livenessProbe:
-  periodSeconds: 10
-  timeoutSeconds: 5
-  failureThreshold: 5
 readinessProbe:
-  periodSeconds: 10
-  timeoutSeconds: 5
-  failureThreshold: 5
 
-
-# Define configurações de um init container, com a mesma imagem a serem rodadas antes do start de um pod
+# Define the command of an init container, it has the same image of the pod
+# Ref https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
 init_container:
   enabled: false
   command:
