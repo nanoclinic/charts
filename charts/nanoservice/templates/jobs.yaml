@@ -34,7 +34,7 @@ spec:
 
           #Range below is for environment variables
           {{- range $key,$value:= .Values.parameters }}
-          - name: {{ printf "%s%s" .Values.env_prefix (upper $key | replace "-" "_") }}
+          - name: {{ printf "%s%s" $.Values.env_prefix (upper $key | replace "-" "_") }}
             value: {{ tpl ($value | toString) $ | quote }}
           {{- end }}
 
