@@ -73,7 +73,7 @@ spec:
 
             #Range below is for environment variables
             {{- range $key,$value:= .Values.parameters }}
-            - name: {{ upper $key | replace "-" "_" }}
+            - name: {{ printf "%s%s" .Values.env_prefix (upper $key | replace "-" "_") }}
               value: {{ tpl ($value | toString) $ | quote }}
             {{- end }}
 
@@ -96,7 +96,7 @@ spec:
 
             #Range below is for environment variables
             {{- range $key,$value:= .Values.parameters }}
-            - name: {{ upper $key | replace "-" "_" }}
+            - name: {{ printf "%s%s" .Values.env_prefix (upper $key | replace "-" "_") }}
               value: {{ tpl ($value | toString) $ | quote }}
             {{- end }}
 

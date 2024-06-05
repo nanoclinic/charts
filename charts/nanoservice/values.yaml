@@ -5,8 +5,15 @@ global:
   overrideName: ""
   additionalLabels: {}
 
-## Define Environment Variables. Example:
-## ENV: dev
+## Define Environment Variables. 
+## If you need to add a prefix to your environment variables such as APP_ENV_VAR
+## use the env_prefix option
+
+## Example:
+## env_prefix: app_
+## parameters:
+##   ENV_VAR: value 
+env_prefix: ""
 parameters: {}
 
 ## Define app image information
