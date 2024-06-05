@@ -8,12 +8,12 @@ If you need more details and examples of configuration, check the `values.yaml` 
 ## TL;DR
 
 ```console
-helm install <release-name> charts/microservice
+helm install <release-name> charts/nanoservice
 ```
 or
 
 ```console
-helm install <release-name> oci://nursa-com.github.io/charts/microservice
+helm install <release-name> oci://nanoclinic.github.io/charts/nanoservice
 ```
 
 ## Introduction
@@ -28,16 +28,16 @@ The charts in this repository are public, and easily downloaded and reused. We r
 
 ## Using the Chart in a microservice
 
-Add the repository to your local shell. To name it `nursa` use the following command:
+Add the repository to your local shell. To name it `nano` use the following command:
 
 ```console
-helm add repo nursa https://nursa-com.github.io/charts
+helm add repo nano https://nanoclinic.github.io/charts
 ```
 
 To install the chart with the release name `my-app` using the:
 
 ```console
-helm install my-app oci://nursa-com.github.io/charts/microservice
+helm install my-app oci://nanoclinic.github.io/charts/nanoservice
 ```
 
 > Note: This installation sets the default values from `values.yaml`.
@@ -54,9 +54,9 @@ If the 2 conditions are met, a new automation will be triggered that will create
 If you are using this chart as a dependency, you can set the dependency like the following. This way, if the update was a patch/minor version, your chart will be automatically updated with the new features at the next deployment. Major changes will be applied when breaking changes are introduced.
 ```
 dependencies:
-  - name: microservice
+  - name: nanoservice
     version: "1.x"
-    repository: "https://nursa-com.github.io/charts"
+    repository: "https://nanoclinic.github.io/charts"
 ```
 ## Configuration and installation details
 
@@ -64,7 +64,7 @@ dependencies:
 To customize your implementation, you should update the values as described in the `values.yaml` file. If you are using this chart as a dependency, you can create a new values file in the parent chart, and customize the behavior of this chart like the following example:
 
 ```
-microservice:
+nanoservice:
   parameters: {}
   image: my-custom-image
   image_tag: my-custom-tag
@@ -76,11 +76,11 @@ microservice:
 
 If you need to update the values dinamically, such as in CI/CD for an image_tag, it's possible to set values in the helm commands, for instance:
 ```
-helm install <release-name> oci://nursa-com.github.io/charts/microservice --set "image_tag=$image_tag"
+helm install <release-name> oci://nanoclinic.github.io/charts/nanoservice --set "image_tag=$image_tag"
 ```
 and if you are using the chart as a dependency:
 ```
-helm install <release-name> <parent_chart> --set "microservice.image_tag=$image_tag"
+helm install <release-name> <parent_chart> --set "nanoservice.image_tag=$image_tag"
 ```
 
 ### Resource requests and limits
