@@ -65,10 +65,10 @@ service:
 ## Leave the values empty if you don't wish to reserve a minimum or set a maximum
 
 autoscaling:
-  min_memory: 100Mi
-  max_memory: 200Mi
-  min_cpu: 100m
-  max_cpu: 200m
+  min_memory:
+  max_memory:
+  min_cpu:
+  max_cpu:
 
 ## For scale-up/down operation, define the number of replicas of the app.
 ## We recommend for the minimum to be 2 or more, unless there is a specific need for a single replica.

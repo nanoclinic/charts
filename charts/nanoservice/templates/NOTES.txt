@@ -5,7 +5,7 @@ This deployment can be --atomic if you use the flag --atomic ⚛
 Atomic is the default behavior for pipelines. It means that the rollback
 happens automatically if the deployment is not successful.
 
-❗❗❗❗❗ INFO ❗❗❗❗❗
+❗INFO
 This chart has the following components:
 
 Migration:
@@ -21,12 +21,10 @@ Release:
     🔅 Load Balancer Health Check, if defined
     🔅 Secret Provider: if you set secrets in the values file, it will be mounted as Environment Variable
 
-🔍🔍🔍🔍🔍🔍🔍🔍🔍🔍🔍🔍🔍🔍🔍🔍🔍🔍🔍🔍
-EXPLORE!
+🔍 EXPLORE!
 
 Your microservice logs are found here:
 
-https://us5.datadoghq.com/logs?query=env%3A{{.Values.global.env}}%20kube_namespace%3A{{.Release.Namespace}}%20service%3A{{.Release.Name}}&cols=kube_namespace%2Cservice&fromUser=true&index=%2A&messageDisplay=inline&refresh_mode=sliding&saved-view-id=3413&storage=hot&stream_sort=desc
+https://console.cloud.google.com/logs/query;query=resource.type%3D%22k8s_container%22%20OR%20resource.type%3D%22k8s_pod%22%0Aresource.labels.cluster_name%3D%22nano-{{ .Values.global.env }}%22%0Aresource.labels.namespace_name%3D%22{{ .Release.Namespace }}%22;summaryFields=:false:32:beginning;?project={{ .Values.global.project_id }}
 
 ☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸☸
-by dev-enablement
