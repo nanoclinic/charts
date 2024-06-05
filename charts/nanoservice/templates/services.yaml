@@ -1,31 +1,35 @@
+{{- if or .Values.service.internalPort (and (eq .Values.debug.enabled true) .Values.debug.port) }}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Release.Name }}
-{{- include "all.labels" . | indent 2 }}
-    app: {{ .Release.Name }}
+  name: {{ include "appname" . }}
+{{- include "app.labels" . | indent 2 }}
+    app: {{ include "appname" . }}
 spec:
   selector:
-    app: {{ .Release.Name }}
+    app: {{ include "appname" . }}
   ports:
-  - name: {{ .Release.Name }}-port
+{{- if .Values.service.internalPort }}
+  - name: {{ include "appname" . }}-port
     protocol: TCP
-    port: {{ .Values.internalPort }}
-    targetPort: {{ .Values.internalPort }}
+    port: {{ .Values.service.internalPort }}
+    targetPort: {{ .Values.service.internalPort }}
+{{- end }}
 {{- if eq .Values.debug.enabled true }}
-  - name: {{ .Release.Name }}-debug-port
+  - name: {{ include "appname" . }}-debug-port
     protocol: TCP
     port: {{ .Values.debug.port }}
     targetPort: {{ .Values.debug.port }}
 {{- end }}
+{{- end }}
 
 ---
 
-{{- if and (eq .Values.expose true) (ne .Values.health_endpoint nil) }}
+{{- if .Values.api_gateway.expose }}
 apiVersion: networking.gke.io/v1
 kind: HealthCheckPolicy
 metadata:
-  name: {{ .Release.Name }}-healthcheck
+  name: {{ include "appname" . }}-healthcheck
 spec:
   default:
     checkIntervalSec: 10
@@ -38,11 +42,11 @@ spec:
       type: HTTP
       httpHealthCheck:
         portSpecification: USE_FIXED_PORT
-        port: {{ .Values.internalPort }}
+        port: {{ .Values.service.internalPort }}
         host: "gcp-lb-health-check"
-        requestPath: {{ .Values.health_endpoint }}
+        requestPath: {{ .Values.api_gateway.health_endpoint }}
   targetRef:
     group: ""
     kind: Service
-    name: {{ .Release.Name }}
+    name: {{ include "appname" . }}
 {{- end }}

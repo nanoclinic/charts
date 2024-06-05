@@ -1,60 +1,39 @@
-
 {{- if .Values.migration.enabled }}
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ .Release.Name }}-migration
+  name: {{ .Release.Name }}-migrator
   namespace: {{ .Release.Namespace }}
-  {{- include "migration.labels" . | indent 2 }}
-  {{- include "migration.annotations" . | indent 2 }}
+{{- include "migration.labels" . | indent 2 }}
+{{- include "migration.annotations" . | indent 2 }}
 spec:
+  backoffLimit: 0
   template:
     metadata:
-      {{- include "migration.labels" . | indent 6 }}
-      {{- include "migration.annotations" . | indent 6 }}
+      name: "{{ .Release.Name }}"
+      namespace: {{ .Release.Namespace }}
+{{- include "migration.labels" . | indent 6 }}
+{{- include "migration.annotations" . | indent 6 }}
     spec:
       restartPolicy: Never
-      serviceAccountName: {{ .Values.serviceAccount }}
+      serviceAccountName: {{ index .Values.serviceAccount }}
       nodeSelector:
         iam.gke.io/gke-metadata-server-enabled: "true"
       containers:
-        - name: {{ .Release.Name }}
-          image: {{ printf "%s:%s" .Values.image .Values.image_tag }}
-          imagePullPolicy: {{ .Values.imagePullPolicy }}
-          ports:
-          - containerPort: {{ .Values.internalPort }}
-        {{- if eq .Values.debug.enabled true }}
-          - containerPort: {{ .Values.debug.port }}
-        {{- end }}
-        {{- if ne .Values.debug.enabled true }}
-          resources:
-            requests:
-              cpu: {{ .Values.min_cpu }}
-            limits:
-              cpu: {{ .Values.max_cpu }}
-        {{- end }}
-        {{- if eq .Values.debug.enabled true }}
-          command:
-            {{ range $arg:= .Values.debug.command }}
-            - {{$arg | quote}}
-            {{- end }}
-        {{- else }}
-          command:
-            {{ range $arg:= .Values.migration.command }}
-            - {{$arg | quote}}
-            {{- end }}
-        {{- end }}
-          env:
-            - name: ENV
-              value: {{ .Values.global.env }}
-            - name: PROJECT_ID
-              value: {{ .Values.global.project_id }}
+      - name: {{ .Release.Name }}-migrator
+        image: {{ printf "%s:%s" .Values.image .Values.image_tag }}
+        imagePullPolicy: {{ .Values.imagePullPolicy }}
+        command: {{ mustRegexSplit " +" .Values.migration.command -1 | toJson }}
+        env:
+          - name: APP
+            value: {{ .Release.Name }}
+          - name: ENV
+            value: {{ .Values.global.env }}
+
+          #Range below is for environment variables
           {{- range $key,$value:= .Values.parameters }}
-            {{- if $.Values.env_prefix }}
-            - name: {{ printf "%s%s" (upper $.Values.env_prefix) (upper $key | replace "-" "_") }}
-            {{- else }}
-            - name: {{ printf "%s" (upper $key | replace "-" "_") }}
-            {{- end }}
-              value: {{ $value | quote }}
+          - name: {{ upper $key | replace "-" "_" }}
+            value: {{ tpl ($value | toString) $ | quote }}
           {{- end }}
+
 {{- end }}
