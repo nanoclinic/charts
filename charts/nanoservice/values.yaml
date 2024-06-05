@@ -18,7 +18,7 @@ secrets: []
 
 ## Define app image information
 ## Example:
-## image: gcr.io/nursa-prod/microservice
+## image: gcr.io/nanoclinic-common/microservice
 ## image_tag: v1.2.3
 ## imagePullPolicy: Always
 image: nginx
@@ -105,10 +105,10 @@ deployment:
 ## The api_gateway_name, namespace and hostname blocks supports templating for dynamic environments,
 ## such as "api-gateway-{{ .Release.Namespace }}"
 api_gateway:
-  api_gateway_name: api-gateway-{{ .Release.Namespace }}
-  namespace: "{{ .Release.Namespace }}"
+  api_gateway_name: api-gateway-foundation
+  namespace: foundation
   expose: false
-  hostname: backend.{{ .Values.global.env }}.nursa.com
+  hostname: api.{{ .Values.global.env }}.nanoclinic.com.br
   route: /app
   health_endpoint: /health
 
