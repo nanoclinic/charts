@@ -42,29 +42,11 @@ labels:
 {{- define "common.annotations" }}
 annotations:
   timestamp: {{ now | unixEpoch | quote }}
-  {{ printf "ad.datadoghq.com/%s.logs" (include "appname" .) }}: |-
-    [{
-      "source":"nestjs",
-      "log_processing_rules": [{
-      "type":"multi_line",
-      "name": "nest_start_line",
-      "pattern": "\\[Nest\\]"
-      }]
-    }]
 {{- end }}
 
 {{- define "migration.annotations" }}
 annotations:
   timestamp: {{ now | unixEpoch | quote }}
-  {{ printf "ad.datadoghq.com/%s-migrator.logs" (include "appname" .) }}: |-
-    [{
-      "source":"nestjs",
-      "log_processing_rules": [{
-      "type":"multi_line",
-      "name": "nest_start_line",
-      "pattern": "\\[Nest\\]"
-      }]
-    }]
   helm.sh/hook: pre-upgrade
   helm.sh/hook-weight: "1"
   helm.sh/hook-delete-policy: hook-succeeded,before-hook-creation
