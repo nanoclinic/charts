@@ -29,6 +29,8 @@ spec:
             value: {{ .Release.Name }}
           - name: ENV
             value: {{ .Values.global.env }}
+          - name: PROJECT_ID
+            value: {{ .Values.global.project_id }}
 
           #Range below is for environment variables
           {{- range $key,$value:= .Values.parameters }}

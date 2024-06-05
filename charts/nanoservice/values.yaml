@@ -9,13 +9,6 @@ global:
 ## ENV: dev
 parameters: {}
 
-## Add secrets from a list that will be mounted as environment variables.
-## The serviceAccount defined must have permissions to access this secret, check the terraform module service_accounts in `microservices` repo
-## secrets:
-##   - secretA
-##   - secretB
-secrets: []
-
 ## Define app image information
 ## Example:
 ## image: gcr.io/nanoclinic-common/microservice
@@ -173,6 +166,4 @@ readinessProbe:
 # Ref https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
 init_container:
   enabled: false
-  command:
-    - sleep
-    - 10
+  command: sleep 10
