@@ -24,15 +24,11 @@ labels:
 
 {{- define "app.labels" }}
 {{- include "common.labels" . }}
-  tags.datadoghq.com/service: {{ include "appname" . }}
-  tags.datadoghq.com/version: {{ default .Values.global.appVersion "1.0.0" -}}
 {{- end }}
 
 {{- define "migration.labels" }}
 {{- include "common.labels" . }}
   app: {{ printf "%s-migrator" .Release.Name }}
-  tags.datadoghq.com/service: {{ printf "%s-migrator" (include "appname" .) }}
-  tags.datadoghq.com/version: {{ default .Values.global.appVersion "1.0.0" -}}
 {{- end }}
 
 #-------------------------------------------------------------------------------
